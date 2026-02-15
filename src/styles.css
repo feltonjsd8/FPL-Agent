@@ -1,0 +1,35 @@
+body { font-family: Arial, sans-serif; margin: 20px; }
+.app { max-width: 900px; margin: auto; }
+header h1 { margin: 0 0 6px 0 }
+.controls { display:flex; gap:8px; margin:12px 0 }
+.controls input { padding:6px; }
+.controls button { padding:6px 10px }
+.suggestion { margin-top: 16px; padding:12px; border:1px solid #ddd }
+
+.muted { color:#666; font-size:0.9em }
+.card { border:1px solid #eee; padding:10px; margin:8px 0; border-radius:6px; background:#fff }
+.suggestions .meta { margin-bottom:8px }
+.single .row { display:flex; gap:12px; align-items:center }
+.single .col { flex:1 }
+.single .gain { font-weight:700; color: #0a7; min-width:80px; text-align:right }
+.pair-grid { display:flex; gap:20px }
+.pair .gain { color:#0a7 }
+.teamview ol { padding-left: 18px }
+.team-row { display:flex; gap:12px; align-items:center; padding:6px 0 }
+.team-row .pos { width:40px; font-weight:700 }
+.team-row .id { flex:1 }
+.error { color: #900; margin-top: 10px }
+.loading { color:#07c; margin-left:8px }
+
+.fixtures { margin-top:6px; display:flex; gap:6px; flex-wrap:wrap }
+.fixture-badge { display:inline-block; padding:4px 8px; border-radius:10px; font-size:0.85em; color:#fff; margin-right:6px; margin-top:4px }
+.fixture-badge.diff-1, .fixture-badge.diff-2 { background: #2e7d32 } /* green */
+.fixture-badge.diff-3 { background: #f9a825; color:#111 } /* yellow */
+.fixture-badge.diff-4, .fixture-badge.diff-5 { background: #c62828 } /* red */
+
+.candidates ul { padding-left: 18px }
+.candidates li { margin-bottom: 8px; line-height: 1.45 }
+
+/* Keep single-transfer fixture badges on one line (allow horizontal scroll) */
+.single .fixtures { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch }
+.single .fixtures .fixture-badge { margin-top: 0 }
