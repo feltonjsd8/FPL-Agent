@@ -9,18 +9,20 @@ function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
   const inTeam = inTeamId ? (teamMap[inTeamId] || `Team #${inTeamId}`) : '';
   const outFixtures = outTeamId ? (fixturesMap[outTeamId] || []) : [];
   const inFixtures = inTeamId ? (fixturesMap[inTeamId] || []) : [];
+  const outNextHA = outFixtures && outFixtures.length ? outFixtures[0].ha : '';
+  const inNextHA = inFixtures && inFixtures.length ? inFixtures[0].ha : '';
   return (
     <div className="single card">
       <div className="row">
         <div className="col">
           <div className="label">Out</div>
-          <div className="player">{s.out.name} {outTeam ? <span className="muted">({outTeam})</span> : null} <span className="muted">({POS[s.out.pos]})</span></div>
+          <div className="player">{s.out.name} {outTeam ? <span className="muted">({outTeam}{outNextHA ? ` ${outNextHA}` : ''})</span> : null} <span className="muted">({POS[s.out.pos]})</span></div>
           <div className="muted">{s.out.cost}m</div>
           {outFixtures && outFixtures.length ? <div className="fixtures">{outFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</div> : null}
         </div>
         <div className="col">
           <div className="label">In</div>
-          <div className="player">{s.in.name} {inTeam ? <span className="muted">({inTeam})</span> : null} <span className="muted">({POS[s.in.pos]})</span></div>
+          <div className="player">{s.in.name} {inTeam ? <span className="muted">({inTeam}{inNextHA ? ` ${inNextHA}` : ''})</span> : null} <span className="muted">({POS[s.in.pos]})</span></div>
           <div className="muted">{s.in.cost}m — expected {s.in.expected_score.toFixed(2)}</div>
           {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</div> : null}
         </div>
