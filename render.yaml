@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: fpl-agent-api
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 4000
+    healthCheckPath: /api/ping
+
+  - type: static_site
+    name: fpl-agent
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE
+        fromService:
+          name: fpl-agent-api
+          type: web
+          property: url

@@ -32,7 +32,7 @@ export default function App() {
       // automatically request suggestions for loaded picks
       try {
         setIsLoading(true);
-        const backend = `http://${window.location.hostname}:4000`;
+        const backend = getBackendUrl();
         const postRes = await fetch(`${backend}/api/suggest/json`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ entryPicks: data }) });
         if (!postRes.ok) {
           const txt = await postRes.text();
@@ -58,7 +58,7 @@ export default function App() {
       // If the team was already loaded via Load Team, POST it to the server suggest endpoint
       if (teamData) {
         const body = { entryPicks: teamData };
-        const backend = `http://${window.location.hostname}:4000`;
+        const backend = getBackendUrl();
         const res = await fetch(`${backend}/api/suggest/json`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         if (!res.ok) {
           const txt = await res.text();
@@ -91,7 +91,7 @@ export default function App() {
     // fetch bootstrap to resolve player ids -> names
     async function loadBootstrap() {
       try {
-        const backend = `http://${window.location.hostname}:4000`;
+        const backend = getBackendUrl();
         const [bRes, fRes] = await Promise.all([fetch(`${backend}/api/bootstrap`), fetch(`${backend}/api/fixtures`)]);
         if (!bRes.ok) return;
         const data = await bRes.json();
@@ -141,6 +141,15 @@ export default function App() {
     }
     loadBootstrap();
   }, [])
+
+  const getBackendUrl = () => {
+    // Use env variable if set (for production)
+    if (import.meta.env.VITE_API_BASE) {
+      return import.meta.env.VITE_API_BASE;
+    }
+    // Default to localhost for dev
+    return `http://${window.location.hostname}:4000`;
+  };
 
   return (
     <div className="app">
