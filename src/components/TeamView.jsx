@@ -62,6 +62,11 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
     const isSelected = selectedPlayerId === p.element;
     const suggestions = isSelected ? getPlayerSuggestions(p.element) : [];
 
+    // Check for double gameweek (2+ fixtures in current gameweek only)
+    const currentEvent = localStorage.getItem('currentEvent');
+    const currentGWFixtures = currentEvent ? (fx || []).filter(f => f.event === parseInt(currentEvent)) : [];
+    const hasDGW = currentGWFixtures && currentGWFixtures.length >= 2;
+
     const formatFixture = (f) => {
       return f.ha === 'H' ? f.opponent.toUpperCase() : f.opponent.toLowerCase();
     };
@@ -69,7 +74,7 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
     return (
       <div key={p.element}>
         <div
-          className={`team-row ${hasSuggestions ? 'has-suggestions' : ''} ${isSelected ? 'selected' : ''}`}
+          className={`team-row ${hasSuggestions ? 'has-suggestions' : ''} ${isSelected ? 'selected' : ''} ${hasDGW ? 'dgw' : ''}`}
           onClick={() => setSelectedPlayerId(isSelected ? null : p.element)}
           style={{ cursor: hasSuggestions ? 'pointer' : 'default' }}
         >
@@ -77,6 +82,7 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
             {pm.name || `#${p.element}`}
             {p.is_captain ? ' (C)' : p.is_vice_captain ? ' (V)' : ''}
             {hasSuggestions && <span className="suggestion-marker">→</span>}
+            {hasDGW && <span className="dgw-badge">DGW</span>}
           </div>
           <div className="muted">{tId ? (teamMap[tId] || `Team #${tId}`) : ''}</div>
           {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}

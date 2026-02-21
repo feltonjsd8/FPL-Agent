@@ -8,6 +8,7 @@ const formatFixture = (f) => {
 
 function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
   const [showAlternatives, setShowAlternatives] = useState(false);
+  const currentEvent = localStorage.getItem('currentEvent');
   const outTeamId = s.out.team || (playerMap[s.out.id] && playerMap[s.out.id].team);
   const inTeamId = s.in.team || (playerMap[s.in.id] && playerMap[s.in.id].team);
   const outTeam = outTeamId ? (teamMap[outTeamId] || `Team #${outTeamId}`) : '';
@@ -16,6 +17,8 @@ function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
   const inFixtures = inTeamId ? (fixturesMap[inTeamId] || []) : [];
   const outNextHA = outFixtures && outFixtures.length ? outFixtures[0].ha : '';
   const inNextHA = inFixtures && inFixtures.length ? inFixtures[0].ha : '';
+  const inCurrentGWFixtures = currentEvent ? (inFixtures || []).filter(f => f.event === parseInt(currentEvent)) : [];
+  const inHasDGW = inCurrentGWFixtures && inCurrentGWFixtures.length >= 2;
   return (
     <div className="single card">
       <div className="row">
@@ -27,7 +30,7 @@ function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
         </div>
         <div className="col">
           <div className="label">In</div>
-          <div className="player">{s.in.name} {inTeam ? <span className="muted">({inTeam}{inNextHA ? ` ${inNextHA}` : ''})</span> : null} <span className="muted">({POS[s.in.pos]})</span></div>
+          <div className="player">{s.in.name} {inTeam ? <span className="muted">({inTeam}{inNextHA ? ` ${inNextHA}` : ''})</span> : null} <span className="muted">({POS[s.in.pos]})</span>{inHasDGW && <span className="dgw-badge">DGW</span>}</div>
           <div className="muted">{s.in.cost}m — expected {s.in.expected_score.toFixed(2)}</div>
           {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
         </div>
@@ -48,9 +51,11 @@ function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
                 const altTeam = altTeamId ? (teamMap[altTeamId] || `Team #${altTeamId}`) : '';
                 const altFixtures = altTeamId ? (fixturesMap[altTeamId] || []) : [];
                 const altNextHA = altFixtures && altFixtures.length ? altFixtures[0].ha : '';
+                const altCurrentGWFixtures = currentEvent ? (altFixtures || []).filter(f => f.event === parseInt(currentEvent)) : [];
+                const altHasDGW = altCurrentGWFixtures && altCurrentGWFixtures.length >= 2;
                 return (
                   <div key={i} className="alternative-item">
-                    <div className="alt-name">{alt.name} {altTeam ? <span className="muted">({altTeam}{altNextHA ? ` ${altNextHA}` : ''})</span> : null} <span className="muted">({POS[alt.pos]})</span></div>
+                    <div className="alt-name">{alt.name} {altTeam ? <span className="muted">({altTeam}{altNextHA ? ` ${altNextHA}` : ''})</span> : null} <span className="muted">({POS[alt.pos]})</span>{altHasDGW && <span className="dgw-badge">DGW</span>}</div>
                     <div className="alt-meta">
                       <span className="alt-cost">{alt.cost}m</span>
                       <span className="alt-expected">expected {alt.expected_score.toFixed(2)}</span>

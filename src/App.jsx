@@ -123,28 +123,33 @@ export default function App() {
         });
         (data.teams || []).forEach(t => { tmap[t.id] = t.short_name || t.name });
         // auto-select current event/gameweek if user hasn't set one
+        let currentEvent = null;
         try {
-          const current = data.current_event || ((data.events || []).find(e => e.is_current) || (data.events || []).find(e => e.is_next) || {}).id;
-          if (current && !event) setEvent(String(current));
+          currentEvent = data.current_event || ((data.events || []).find(e => e.is_current) || (data.events || []).find(e => e.is_next) || {}).id;
+          if (currentEvent && !event) setEvent(String(currentEvent));
         } catch (e) { }
         // build fixturesMap: teamId -> [shortNameOpponent,...] for next 4 upcoming fixtures
-        const upcoming = (fixtures || []).filter(f => !f.finished).sort((a,b)=> (a.event||0)-(b.event||0));
+        const allUpcoming = (fixtures || []).filter(f => !f.finished).sort((a,b)=> (a.event||0)-(b.event||0));
         const fm = {};
-        upcoming.forEach(fx => {
+        allUpcoming.forEach(fx => {
           const h = fx.team_h, a = fx.team_a;
           fm[h] = fm[h] || [];
           fm[a] = fm[a] || [];
           const aName = tmap[a] || `Team ${a}`;
           const hName = tmap[h] || `Team ${h}`;
           // from the perspective of team_h it's a home fixture (H), team_a it's away (A)
-          fm[h].push({ opponent: aName, difficulty: fx.team_h_difficulty, ha: 'H' });
-          fm[a].push({ opponent: hName, difficulty: fx.team_a_difficulty, ha: 'A' });
+          fm[h].push({ opponent: aName, difficulty: fx.team_h_difficulty, ha: 'H', event: fx.event });
+          fm[a].push({ opponent: hName, difficulty: fx.team_a_difficulty, ha: 'A', event: fx.event });
         });
         // trim to next 4
         Object.keys(fm).forEach(k => { fm[k] = fm[k].slice(0,4); });
         setPlayerMap(map);
         setTeamMap(tmap);
         setFixturesMap(fm);
+        // Store currentEvent in state for DGW detection
+        if (currentEvent) {
+          localStorage.setItem('currentEvent', currentEvent);
+        }
       } catch (e) {
         // ignore
       }

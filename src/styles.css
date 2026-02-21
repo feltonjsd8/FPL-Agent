@@ -350,3 +350,19 @@ header h1 { margin: 0 0 6px 0 }
   color: #0a7;
   font-weight: bold;
 }
+
+/* Double gameweek indicator */
+.team-row.dgw {
+  border-left: 4px solid #f9a825;
+}
+
+.dgw-badge {
+  display: inline-block;
+  background: #f9a825;
+  color: #111;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.75em;
+  margin-left: 4px;
+}
