@@ -105,8 +105,8 @@ export default function App() {
             element_type: e.element_type,
             form: parseFloat(e.form) || 0,
             now_cost: (e.now_cost || 0) / 10,
-            xg: parseFloat(e.xG || 0) || 0,
-            xa: parseFloat(e.xA || 0) || 0,
+            xg: parseFloat(e.expected_goals || 0) || 0,
+            xa: parseFloat(e.expected_assists || 0) || 0,
             minutes: e.minutes || 0,
             selected_by_percent: parseFloat(e.selected_by_percent || 0) || 0
           };
@@ -174,7 +174,7 @@ export default function App() {
 
 
       {error && <div className="error">Error: {error}</div>}
-      {teamData && showTeam && <TeamView data={teamData} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} />}
+      {teamData && showTeam && <TeamView data={teamData} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} suggestionData={suggestionData} />}
 
       {suggestionData && <Suggestions data={suggestionData} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} isLoading={isLoading} />}
     </div>

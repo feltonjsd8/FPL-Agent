@@ -33,3 +33,38 @@ header h1 { margin: 0 0 6px 0 }
 /* Keep single-transfer fixture badges on one line (allow horizontal scroll) */
 .single .fixtures { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch }
 .single .fixtures .fixture-badge { margin-top: 0 }
+
+/* Suggestions marker on team rows */
+.suggestion-marker { display:inline-block; margin-left:8px; color:#0a7; font-weight:bold; font-size:1.1em }
+.team-row.has-suggestions { font-weight:500 }
+.team-row.selected { background-color:#f0f8ff; border-radius:4px; padding:6px }
+.team-row { transition: background-color 0.15s ease }
+
+/* Inline suggestions under player */
+.inline-suggestions { margin-left:12px; margin-top:8px; border-left:3px solid #2196F3; padding-left:12px }
+.suggestion-item {
+  padding:12px;
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:6px;
+  margin-bottom:8px;
+}
+.suggestion-item .row {
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+.suggestion-item .col {
+  flex:1;
+}
+.suggestion-item .col .label { font-weight:600; color:#333; margin-bottom:4px; font-size:0.9em }
+.suggestion-item .col .player { font-weight:500; margin-bottom:4px }
+.suggestion-item .col .fixtures { margin-top:6px }
+.suggestion-item .gain {
+  font-weight:bold;
+  color:#0a7;
+  min-width:60px;
+  text-align:center;
+  padding-top:8px;
+  font-size:1.1em;
+}

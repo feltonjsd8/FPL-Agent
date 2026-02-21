@@ -65,6 +65,14 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
   // Build player map
   const players = {};
   bootstrap.elements.forEach(p => {
+    // Calculate games played from minutes
+    const gamesPlayed = Math.max(1, Math.round((p.minutes || 0) / 90));
+    // Calculate average xG/xA per game
+    const seasonXG = parseFloat(p.expected_goals || 0);
+    const seasonXA = parseFloat(p.expected_assists || 0);
+    const avgXGPerGame = seasonXG / gamesPlayed;
+    const avgXAPerGame = seasonXA / gamesPlayed;
+    // This will be projected in fixtureScoreForPlayer
     players[p.id] = {
       id: p.id,
       web_name: p.web_name,
@@ -74,7 +82,12 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
       now_cost: p.now_cost / 10,
       total_points: p.total_points || 0,
       minutes: p.minutes || 0,
-      expected_points: (parseFloat(p.xG || 0) + parseFloat(p.xA || 0)) || 0,
+      seasonXG: seasonXG,
+      seasonXA: seasonXA,
+      avgXGPerGame: avgXGPerGame,
+      avgXAPerGame: avgXAPerGame,
+      gamesPlayed: gamesPlayed,
+      expected_points: (seasonXG + seasonXA) || 0,
       selected_by_percent: parseFloat(p.selected_by_percent || 0)
     };
   });
@@ -97,6 +110,25 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
     return 1 / (1 + avg);
   }
 
+  // Project xG/xA for next 4 fixtures based on average per game and fixture difficulty
+  function projectedExpectedPoints(player) {
+    const tf = teamFixtures[player.team] || [];
+    const upcomingFixtures = tf.slice(0, 4);
+    if (!upcomingFixtures.length) {
+      return player.seasonXG + player.seasonXA;
+    }
+    // Average xG/xA per game
+    const avgXGPerGame = player.avgXGPerGame;
+    const avgXAPerGame = player.avgXAPerGame;
+    // Adjust by average fixture difficulty over next 4 games
+    const avgFixtureDifficulty = upcomingFixtures.reduce((a, b) => a + b, 0) / upcomingFixtures.length;
+    const difficultyMultiplier = 1 / (1 + avgFixtureDifficulty); // Higher difficulty = lower multiplier
+    // Project for 4 fixtures with difficulty adjustment
+    const projectedXG = avgXGPerGame * 4 * difficultyMultiplier;
+    const projectedXA = avgXAPerGame * 4 * difficultyMultiplier;
+    return projectedXG + projectedXA;
+  }
+
   // Normalize squad picks
   let squad = [];
   if (picks && picks.picks) squad = picks.picks.map(p => ({ element: p.element, position: p.position, multiplier: p.multiplier }));
@@ -109,16 +141,18 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
   const scoredCandidates = candidates.map(p => {
     const fScore = fixtureScoreForPlayer(p);
     const minutesBoost = p.minutes > 0 ? 0.5 : 0;
-    const popularity = (p.selected_by_percent || 0) / 100;
-    const score = p.form * 2.2 + p.expected_points * 1.9 + fScore * 3.2 + minutesBoost + popularity * 0.8 - (p.now_cost / 25);
-    return { ...p, score, fixtureScore: fScore };
+    // Use projected xG/xA for next 4 fixtures instead of season totals
+    const projectedXGXA = projectedExpectedPoints(p);
+    const score = p.form * 1.5 + projectedXGXA * 1.9 + fScore * 7.0 + minutesBoost;
+    return { ...p, score, fixtureScore: fScore, projectedExpectedPoints: projectedXGXA };
   }).sort((a, b) => b.score - a.score);
 
   // Score current players
   const currentPlayers = squad.map(s => ({ pick: s, info: players[s.element] })).filter(x => x.info);
   function currentValue(info) {
     const fScore = fixtureScoreForPlayer(info);
-    return (info.form || 0) * 2.2 + (info.expected_points || 0) * 1.9 + fScore * 3.2;
+    const projectedXGXA = projectedExpectedPoints(info);
+    return (info.form || 0) * 1.5 + projectedXGXA * 1.9 + fScore * 3.2;
   }
 
   // Attempt to get available bank (fallback to 0)
