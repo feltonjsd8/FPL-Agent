@@ -9,6 +9,12 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
   const starters = picks.filter(p => p.multiplier && p.multiplier > 0);
   const bench = picks.filter(p => !p.multiplier || p.multiplier === 0);
 
+  // Debug: log first pick to see what fields are available
+  if (picks.length > 0 && !window.__fplDebugLogged) {
+    console.log('First pick object:', picks[0]);
+    window.__fplDebugLogged = true;
+  }
+
   const getPlayerSuggestions = (playerId) => {
     if (!suggestionData || !suggestionData.topSingles) return [];
     return suggestionData.topSingles.filter(s => s.out.id === playerId);
@@ -67,6 +73,11 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
     const currentGWFixtures = currentEvent ? (fx || []).filter(f => f.event === parseInt(currentEvent)) : [];
     const hasDGW = currentGWFixtures && currentGWFixtures.length >= 2;
 
+    // Get gameweek score if available
+    // Check multiple possible field names from FPL API
+    const gwScore = (p.points !== undefined && p.points !== null) ? p.points :
+                    (p.event_points !== undefined && p.event_points !== null) ? p.event_points : null;
+
     const formatFixture = (f) => {
       return f.ha === 'H' ? f.opponent.toUpperCase() : f.opponent.toLowerCase();
     };
@@ -86,7 +97,7 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
           </div>
           <div className="muted">{tId ? (teamMap[tId] || `Team #${tId}`) : ''}</div>
           {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
-          <div className="muted">Expected: {isNaN(exp.score) ? '-' : exp.score.toFixed(2)}</div>
+          <div className="muted">{gwScore !== null ? `GW: ${gwScore}` : `Expected: ${isNaN(exp.score) ? '-' : exp.score.toFixed(2)}`}</div>
         </div>
         {suggestions.length > 0 && (
           <div className="inline-suggestions">

@@ -6,7 +6,7 @@ const formatFixture = (f) => {
   return f.ha === 'H' ? f.opponent.toUpperCase() : f.opponent.toLowerCase();
 };
 
-function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
+function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {}, gwPointsMap = {} }) {
   const [showAlternatives, setShowAlternatives] = useState(false);
   const currentEvent = localStorage.getItem('currentEvent');
   const outTeamId = s.out.team || (playerMap[s.out.id] && playerMap[s.out.id].team);
@@ -19,13 +19,14 @@ function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
   const inNextHA = inFixtures && inFixtures.length ? inFixtures[0].ha : '';
   const inCurrentGWFixtures = currentEvent ? (inFixtures || []).filter(f => f.event === parseInt(currentEvent)) : [];
   const inHasDGW = inCurrentGWFixtures && inCurrentGWFixtures.length >= 2;
+  const outGWScore = gwPointsMap[s.out.id];
   return (
     <div className="single card">
       <div className="row">
         <div className="col">
           <div className="label">Out</div>
           <div className="player">{s.out.name} {outTeam ? <span className="muted">({outTeam}{outNextHA ? ` ${outNextHA}` : ''})</span> : null} <span className="muted">({POS[s.out.pos]})</span></div>
-          <div className="muted">{s.out.cost}m</div>
+          <div className="muted">{s.out.cost}m{outGWScore !== undefined ? ` — GW: ${outGWScore}` : ''}</div>
           {outFixtures && outFixtures.length ? <div className="fixtures">{outFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
         </div>
         <div className="col">
@@ -105,8 +106,22 @@ function Pair({ p, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
   )
 }
 
-export default function Suggestions({ data, playerMap = {}, teamMap = {}, fixturesMap = {}, isLoading = false }) {
+export default function Suggestions({ data, playerMap = {}, teamMap = {}, fixturesMap = {}, isLoading = false, teamData = null }) {
   const { bank, topSingles = [], pairs = [], topCandidates = [] } = data || {};
+  // Build a map of player ID -> gameweek points from team data
+  const gwPointsMap = {};
+  if (teamData && (teamData.picks || teamData.results)) {
+    const picks = teamData.picks || teamData.results;
+    picks.forEach(p => {
+      // Check multiple possible field names from FPL API
+      if (p.points !== undefined && p.points !== null) {
+        gwPointsMap[p.element] = p.points;
+      } else if (p.event_points !== undefined && p.event_points !== null) {
+        gwPointsMap[p.element] = p.event_points;
+      }
+    });
+  }
+
   return (
     <section className="suggestions">
       <h2>Suggestions</h2>
@@ -126,7 +141,7 @@ export default function Suggestions({ data, playerMap = {}, teamMap = {}, fixtur
             s.in.name = p ? p.name : `#${s.in.id}`;
             s.in.team = p ? p.team : undefined;
           }
-          return <Single key={i} s={s} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} />
+          return <Single key={i} s={s} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} gwPointsMap={gwPointsMap} />
         }) : <div className="muted">No single-transfer suggestions</div>}
       </div>
 
