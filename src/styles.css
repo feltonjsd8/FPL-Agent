@@ -222,3 +222,131 @@ header h1 { margin: 0 0 6px 0 }
   padding-top:8px;
   font-size:1.1em;
 }
+
+/* Alternative suggestions */
+.alternatives-section {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.alternatives-toggle {
+  background: none;
+  border: none;
+  color: #2196F3;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95em;
+  padding: 4px 0;
+  text-align: left;
+}
+
+.alternatives-toggle:hover {
+  text-decoration: underline;
+}
+
+.alternatives-list {
+  margin-top: 8px;
+  padding-left: 16px;
+  border-left: 2px solid #E3F2FD;
+}
+
+.alternative-item {
+  padding: 8px 0;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+.alternative-item .alt-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.alternative-item .alt-meta {
+  display: flex;
+  gap: 16px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.alternative-item .alt-cost {
+  color: #333;
+  font-weight: 500;
+}
+
+.alternative-item .alt-expected {
+  font-size: 0.85em;
+}
+
+.alternative-item .alt-gain {
+  color: #0a7;
+  font-weight: bold;
+}
+
+/* Inline alternatives in team view */
+.alternatives-inline {
+  margin-top: 0;
+  padding: 8px 0 0 0;
+}
+
+.alternatives-toggle-inline {
+  background: none;
+  border: none;
+  color: #2196F3;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9em;
+  padding: 4px 0;
+  margin: 0;
+  text-align: left;
+}
+
+.alternatives-toggle-inline:hover {
+  text-decoration: underline;
+}
+
+.alternatives-list-inline {
+  margin-top: 8px;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  border-left: 2px solid #2196F3;
+}
+
+.alternative-item-inline {
+  padding: 8px;
+  margin-bottom: 6px;
+  background: white;
+  border-radius: 3px;
+  border: 1px solid #eee;
+  font-size: 0.85em;
+}
+
+.alternative-item-inline:last-child {
+  margin-bottom: 0;
+}
+
+.alt-main {
+  margin-bottom: 6px;
+}
+
+.alt-name {
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.alt-stats {
+  display: flex;
+  gap: 12px;
+  color: #666;
+  font-size: 0.85em;
+}
+
+.alt-stats span {
+  display: inline-block;
+}
+
+.alt-gain-inline {
+  color: #0a7;
+  font-weight: bold;
+}

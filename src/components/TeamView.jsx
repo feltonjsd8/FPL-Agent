@@ -53,6 +53,7 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
   }
 
   const renderPlayerRow = (p) => {
+    const [showAlternatives, setShowAlternatives] = useState(null); // null = show none, number = index to show
     const pm = playerMap[p.element] || {};
     const tId = pm.team;
     const fx = tId ? (fixturesMap[tId] || []) : [];
@@ -87,22 +88,56 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
               const inTeamId = s.in.team || (playerMap[s.in.id] && playerMap[s.in.id].team);
               const inFixtures = inTeamId ? (fixturesMap[inTeamId] || []) : [];
               return (
-                <div key={i} className="suggestion-item card">
-                  <div className="row">
-                    <div className="col">
-                      <div className="label">Out</div>
-                      <div className="player">{s.out.name} <span className="muted">({POS[s.out.pos]})</span></div>
-                      <div className="muted">{s.out.cost}m</div>
-                      {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
+                <div key={i}>
+                  <div className="suggestion-item card">
+                    <div className="row">
+                      <div className="col">
+                        <div className="label">Out</div>
+                        <div className="player">{s.out.name} <span className="muted">({POS[s.out.pos]})</span></div>
+                        <div className="muted">{s.out.cost}m</div>
+                        {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
+                      </div>
+                      <div className="col">
+                        <div className="label">In</div>
+                        <div className="player">{s.in.name} <span className="muted">({POS[s.in.pos]})</span></div>
+                        <div className="muted">{s.in.cost}m — expected {s.in.expected_score?.toFixed(2) || '?'}</div>
+                        {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
+                      </div>
+                      <div className="col gain">+{s.gain?.toFixed(2) || '?'}</div>
                     </div>
-                    <div className="col">
-                      <div className="label">In</div>
-                      <div className="player">{s.in.name} <span className="muted">({POS[s.in.pos]})</span></div>
-                      <div className="muted">{s.in.cost}m — expected {s.in.expected_score?.toFixed(2) || '?'}</div>
-                      {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
-                    </div>
-                    <div className="col gain">+{s.gain?.toFixed(2) || '?'}</div>
                   </div>
+                  {s.alternatives && s.alternatives.length > 0 && (
+                    <div className="alternatives-inline">
+                      <button
+                        className="alternatives-toggle-inline"
+                        onClick={() => setShowAlternatives(showAlternatives === i ? null : i)}
+                      >
+                        {showAlternatives === i ? '▼' : '▶'} {s.alternatives.length} alternative{s.alternatives.length !== 1 ? 's' : ''}
+                      </button>
+                      {showAlternatives === i && (
+                        <div className="alternatives-list-inline">
+                          {s.alternatives.map((alt, j) => {
+                            const altTeamId = playerMap[alt.id] && playerMap[alt.id].team;
+                            const altTeam = altTeamId ? (teamMap[altTeamId] || `Team #${altTeamId}`) : '';
+                            const altFixtures = altTeamId ? (fixturesMap[altTeamId] || []) : [];
+                            return (
+                              <div key={j} className="alternative-item-inline">
+                                <div className="alt-main">
+                                  <div className="alt-name">{alt.name} <span className="muted">({altTeam || `Team #${altTeamId}`})</span> <span className="muted">({POS[alt.pos]})</span></div>
+                                  <div className="alt-stats">
+                                    <span>{alt.cost}m</span>
+                                    <span>expected {alt.expected_score.toFixed(2)}</span>
+                                    <span className="alt-gain-inline">+{alt.gain.toFixed(2)}</span>
+                                  </div>
+                                </div>
+                                {altFixtures && altFixtures.length ? <div className="fixtures">{altFixtures.map((f,k)=> <span key={k} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

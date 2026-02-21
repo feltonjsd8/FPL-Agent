@@ -186,17 +186,36 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
   });
   Object.keys(byPosition).forEach(k => byPosition[k].sort((a, b) => a.value - b.value));
 
-  // For each worst player per position, find top affordable candidate of same position
+  // For each worst player per position, find top affordable candidates of same position
   const singles = [];
   Object.entries(byPosition).forEach(([pos, arr]) => {
     arr.slice(0, 2).forEach(w => {
       const worst = w.info;
       const worstSell = worst.now_cost;
       const affordability = worstSell + bank + 0.1; // small buffer
-      const best = scoredCandidates.find(c => c.element_type === worst.element_type && c.now_cost <= affordability);
-      if (best) {
+      // Find top 3 affordable candidates (instead of just 1)
+      const alternatives = scoredCandidates
+        .filter(c => c.element_type === worst.element_type && c.now_cost <= affordability)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      if (alternatives.length > 0) {
+        // Use the best alternative as the main suggestion
+        const best = alternatives[0];
         const gain = best.score - w.value;
-        singles.push({ out: { id: worst.id, name: worst.web_name, pos: worst.element_type, cost: worst.now_cost }, in: { id: best.id, name: best.web_name, pos: best.element_type, cost: best.now_cost, expected_score: best.score }, gain });
+        singles.push({
+          out: { id: worst.id, name: worst.web_name, pos: worst.element_type, cost: worst.now_cost },
+          in: { id: best.id, name: best.web_name, pos: best.element_type, cost: best.now_cost, expected_score: best.score },
+          alternatives: alternatives.slice(1).map(alt => ({
+            id: alt.id,
+            name: alt.web_name,
+            pos: alt.element_type,
+            cost: alt.now_cost,
+            expected_score: alt.score,
+            gain: alt.score - w.value
+          })),
+          gain
+        });
       }
     });
   });

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const POS = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 
@@ -7,6 +7,7 @@ const formatFixture = (f) => {
 };
 
 function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
+  const [showAlternatives, setShowAlternatives] = useState(false);
   const outTeamId = s.out.team || (playerMap[s.out.id] && playerMap[s.out.id].team);
   const inTeamId = s.in.team || (playerMap[s.in.id] && playerMap[s.in.id].team);
   const outTeam = outTeamId ? (teamMap[outTeamId] || `Team #${outTeamId}`) : '';
@@ -32,6 +33,37 @@ function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
         </div>
         <div className="col gain">+{s.gain.toFixed(2)}</div>
       </div>
+      {s.alternatives && s.alternatives.length > 0 && (
+        <div className="alternatives-section">
+          <button
+            className="alternatives-toggle"
+            onClick={() => setShowAlternatives(!showAlternatives)}
+          >
+            {showAlternatives ? '▼' : '▶'} {s.alternatives.length} alternative{s.alternatives.length !== 1 ? 's' : ''}
+          </button>
+          {showAlternatives && (
+            <div className="alternatives-list">
+              {s.alternatives.map((alt, i) => {
+                const altTeamId = playerMap[alt.id] && playerMap[alt.id].team;
+                const altTeam = altTeamId ? (teamMap[altTeamId] || `Team #${altTeamId}`) : '';
+                const altFixtures = altTeamId ? (fixturesMap[altTeamId] || []) : [];
+                const altNextHA = altFixtures && altFixtures.length ? altFixtures[0].ha : '';
+                return (
+                  <div key={i} className="alternative-item">
+                    <div className="alt-name">{alt.name} {altTeam ? <span className="muted">({altTeam}{altNextHA ? ` ${altNextHA}` : ''})</span> : null} <span className="muted">({POS[alt.pos]})</span></div>
+                    <div className="alt-meta">
+                      <span className="alt-cost">{alt.cost}m</span>
+                      <span className="alt-expected">expected {alt.expected_score.toFixed(2)}</span>
+                      <span className="alt-gain">+{alt.gain.toFixed(2)}</span>
+                    </div>
+                    {altFixtures && altFixtures.length ? <div className="fixtures">{altFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
