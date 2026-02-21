@@ -116,34 +116,43 @@ export default function TeamView({ data, playerMap = {}, teamMap = {}, fixturesM
 
   return (
     <section className="teamview">
-      <h2>Your Team</h2>
-      <div className="formation"><strong>Formation:</strong> {formation}</div>
+      <h2>Formation: {formation}</h2>
 
-      <div className="starting">
-        <div className="position-block">
-          <h4>Goalkeeper</h4>
-          {(grouped[1] || []).map((p) => renderPlayerRow(p))}
+      <div className="formation-grid">
+        {/* Goalkeeper */}
+        <div className="formation-row goalkeeper-row">
+          <div className="players-container">
+            {(grouped[1] || []).map((p) => renderPlayerRow(p))}
+          </div>
         </div>
 
-        <div className="position-block">
-          <h4>Defenders</h4>
-          {(grouped[2] || []).map((p) => renderPlayerRow(p))}
+        {/* Defenders */}
+        <div className="formation-row defenders-row">
+          <div className="players-container">
+            {(grouped[2] || []).map((p) => renderPlayerRow(p))}
+          </div>
         </div>
 
-        <div className="position-block">
-          <h4>Midfielders</h4>
-          {(grouped[3] || []).map((p) => renderPlayerRow(p))}
+        {/* Midfielders */}
+        <div className="formation-row midfielders-row">
+          <div className="players-container">
+            {(grouped[3] || []).map((p) => renderPlayerRow(p))}
+          </div>
         </div>
 
-        <div className="position-block">
-          <h4>Forwards</h4>
-          {(grouped[4] || []).map((p) => renderPlayerRow(p))}
+        {/* Forwards */}
+        <div className="formation-row forwards-row">
+          <div className="players-container">
+            {(grouped[4] || []).map((p) => renderPlayerRow(p))}
+          </div>
         </div>
       </div>
 
-      <div className="bench">
-        <h4>Bench</h4>
-        {bench.map((p) => renderPlayerRow(p))}
+      <div className="bench-section">
+        <h3>Bench</h3>
+        <div className="bench-players">
+          {bench.map((p) => renderPlayerRow(p))}
+        </div>
       </div>
     </section>
   )
