@@ -2,6 +2,10 @@ import React from 'react'
 
 const POS = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 
+const formatFixture = (f) => {
+  return f.ha === 'H' ? f.opponent.toUpperCase() : f.opponent.toLowerCase();
+};
+
 function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
   const outTeamId = s.out.team || (playerMap[s.out.id] && playerMap[s.out.id].team);
   const inTeamId = s.in.team || (playerMap[s.in.id] && playerMap[s.in.id].team);
@@ -18,13 +22,13 @@ function Single({ s, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
           <div className="label">Out</div>
           <div className="player">{s.out.name} {outTeam ? <span className="muted">({outTeam}{outNextHA ? ` ${outNextHA}` : ''})</span> : null} <span className="muted">({POS[s.out.pos]})</span></div>
           <div className="muted">{s.out.cost}m</div>
-          {outFixtures && outFixtures.length ? <div className="fixtures">{outFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</div> : null}
+          {outFixtures && outFixtures.length ? <div className="fixtures">{outFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
         </div>
         <div className="col">
           <div className="label">In</div>
           <div className="player">{s.in.name} {inTeam ? <span className="muted">({inTeam}{inNextHA ? ` ${inNextHA}` : ''})</span> : null} <span className="muted">({POS[s.in.pos]})</span></div>
           <div className="muted">{s.in.cost}m — expected {s.in.expected_score.toFixed(2)}</div>
-          {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</div> : null}
+          {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f, j) => <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
         </div>
         <div className="col gain">+{s.gain.toFixed(2)}</div>
       </div>
@@ -53,11 +57,11 @@ function Pair({ p, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
       <div className="pair-grid">
         <div>
           <div className="label">First</div>
-          {(() => { const f = fmt(p.first); return <div><div className="muted">{f.text}</div>{f.outFixtures && f.outFixtures.length ? <div className="fixtures">{f.outFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{x.opponent} ({x.ha})</span>)}</div> : null}{f.inFixtures && f.inFixtures.length ? <div className="fixtures">{f.inFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{x.opponent} ({x.ha})</span>)}</div> : null}</div> })()}
+          {(() => { const f = fmt(p.first); return <div><div className="muted">{f.text}</div>{f.outFixtures && f.outFixtures.length ? <div className="fixtures">{f.outFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{formatFixture(x)}</span>)}</div> : null}{f.inFixtures && f.inFixtures.length ? <div className="fixtures">{f.inFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{formatFixture(x)}</span>)}</div> : null}</div> })()}
         </div>
         <div>
           <div className="label">Second</div>
-          {(() => { const f = fmt(p.second); return <div><div className="muted">{f.text}</div>{f.outFixtures && f.outFixtures.length ? <div className="fixtures">{f.outFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{x.opponent} ({x.ha})</span>)}</div> : null}{f.inFixtures && f.inFixtures.length ? <div className="fixtures">{f.inFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{x.opponent} ({x.ha})</span>)}</div> : null}</div> })()}
+          {(() => { const f = fmt(p.second); return <div><div className="muted">{f.text}</div>{f.outFixtures && f.outFixtures.length ? <div className="fixtures">{f.outFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{formatFixture(x)}</span>)}</div> : null}{f.inFixtures && f.inFixtures.length ? <div className="fixtures">{f.inFixtures.map((x,i)=> <span key={i} className={`fixture-badge diff-${x.difficulty}`}>{formatFixture(x)}</span>)}</div> : null}</div> })()}
         </div>
       </div>
     </div>
@@ -116,7 +120,7 @@ export default function Suggestions({ data, playerMap = {}, teamMap = {}, fixtur
             const teamId = (playerMap[c.id] && playerMap[c.id].team) || c.team;
             const fixtures = teamId ? (fixturesMap[teamId] || []) : [];
             return (
-              <li key={c.id}>{c.web_name || (playerMap[c.id] && playerMap[c.id].name) || `#${c.id}`} — {POS[c.element_type]} — {c.now_cost}m — {teamMap[teamId] ? ` ${teamMap[teamId]}` : ''}{fixtures && fixtures.length ? <> — {fixtures.map((f,i)=> <span key={i} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</> : ''} — score {c.score.toFixed(2)}</li>
+              <li key={c.id}>{c.web_name || (playerMap[c.id] && playerMap[c.id].name) || `#${c.id}`} — {POS[c.element_type]} — {c.now_cost}m — {teamMap[teamId] ? ` ${teamMap[teamId]}` : ''}{fixtures && fixtures.length ? <> — {fixtures.map((f,i)=> <span key={i} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</> : ''} — score {c.score.toFixed(2)}</li>
             )
           })}
         </ul>

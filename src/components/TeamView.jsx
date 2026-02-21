@@ -61,6 +61,10 @@ export default function TeamView({ data, playerMap = {}, teamMap = {}, fixturesM
     const isSelected = selectedPlayerId === p.element;
     const suggestions = isSelected ? getPlayerSuggestions(p.element) : [];
 
+    const formatFixture = (f) => {
+      return f.ha === 'H' ? f.opponent.toUpperCase() : f.opponent.toLowerCase();
+    };
+
     return (
       <div key={p.element}>
         <div
@@ -74,7 +78,7 @@ export default function TeamView({ data, playerMap = {}, teamMap = {}, fixturesM
             {hasSuggestions && <span className="suggestion-marker">→</span>}
           </div>
           <div className="muted">{tId ? (teamMap[tId] || `Team #${tId}`) : ''}</div>
-          {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</div> : null}
+          {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
           <div className="muted">Expected: {isNaN(exp.score) ? '-' : exp.score.toFixed(2)}</div>
         </div>
         {suggestions.length > 0 && (
@@ -89,13 +93,13 @@ export default function TeamView({ data, playerMap = {}, teamMap = {}, fixturesM
                       <div className="label">Out</div>
                       <div className="player">{s.out.name} <span className="muted">({POS[s.out.pos]})</span></div>
                       <div className="muted">{s.out.cost}m</div>
-                      {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</div> : null}
+                      {fx && fx.length ? <div className="fixtures">{fx.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
                     </div>
                     <div className="col">
                       <div className="label">In</div>
                       <div className="player">{s.in.name} <span className="muted">({POS[s.in.pos]})</span></div>
                       <div className="muted">{s.in.cost}m — expected {s.in.expected_score?.toFixed(2) || '?'}</div>
-                      {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{f.opponent} ({f.ha})</span>)}</div> : null}
+                      {inFixtures && inFixtures.length ? <div className="fixtures">{inFixtures.map((f,j)=> <span key={j} className={`fixture-badge diff-${f.difficulty}`}>{formatFixture(f)}</span>)}</div> : null}
                     </div>
                     <div className="col gain">+{s.gain?.toFixed(2) || '?'}</div>
                   </div>
