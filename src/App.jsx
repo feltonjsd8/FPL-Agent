@@ -6,6 +6,7 @@ export default function App() {
   const [entryId, setEntryId] = useState('9093691')
   const [event, setEvent] = useState('')
   const [teamData, setTeamData] = useState(null)
+  const [entryName, setEntryName] = useState('')
   const [suggestionData, setSuggestionData] = useState(null)
   const [error, setError] = useState(null)
   const [showTeam, setShowTeam] = useState(false)
@@ -18,21 +19,30 @@ export default function App() {
     setError(null);
     if (!entryId) return setError('Enter your entry ID (numeric)');
     try {
-      const res = await fetch(`/api/entry/${entryId}/picks/${event || ''}`);
-      if (!res.ok) {
-        const txt = await res.text();
-        setTeamData(null);
-        return setError(`Request failed: ${res.status} ${res.statusText} — ${txt}`);
-      }
-      const data = await res.json();
-      setTeamData(data);
-      setShowTeam(true);
-      // automatically request suggestions for loaded picks
+      const backend = getBackendUrl();
+      const [pickRes, entryRes] = await Promise.all([
+        fetch(`/api/entry/${entryId}/picks/${event || ''}`),
+        fetch(`${backend}/api/entry/${entryId}`)
+      ]);
 
+      if (!pickRes.ok) {
+        const txt = await pickRes.text();
+        setTeamData(null);
+        return setError(`Request failed: ${pickRes.status} ${pickRes.statusText} — ${txt}`);
+      }
+
+      const data = await pickRes.json();
+      setTeamData(data);
+
+      if (entryRes.ok) {
+        const entryData = await entryRes.json();
+        setEntryName(entryData.name || '');
+      }
+
+      setShowTeam(true);
       // automatically request suggestions for loaded picks
       try {
         setIsLoading(true);
-        const backend = getBackendUrl();
         const postRes = await fetch(`${backend}/api/suggest/json`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ entryPicks: data }) });
         if (!postRes.ok) {
           const txt = await postRes.text();
@@ -174,7 +184,7 @@ export default function App() {
 
 
       {error && <div className="error">Error: {error}</div>}
-      {teamData && showTeam && <TeamView data={teamData} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} suggestionData={suggestionData} />}
+      {teamData && showTeam && <TeamView data={teamData} entryName={entryName} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} suggestionData={suggestionData} />}
 
       {suggestionData && <Suggestions data={suggestionData} playerMap={playerMap} teamMap={teamMap} fixturesMap={fixturesMap} isLoading={isLoading} />}
     </div>

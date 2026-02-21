@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 const POS = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 
-export default function TeamView({ data, playerMap = {}, teamMap = {}, fixturesMap = {}, suggestionData = null }) {
+export default function TeamView({ data, entryName = '', playerMap = {}, teamMap = {}, fixturesMap = {}, suggestionData = null }) {
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const picks = (data && (data.picks || data.results)) || [];
   // starters have multiplier>0
@@ -120,7 +120,7 @@ export default function TeamView({ data, playerMap = {}, teamMap = {}, fixturesM
 
   return (
     <section className="teamview">
-      <h2>Formation: {formation}</h2>
+      <h2>{entryName || 'Team'} — {formation}</h2>
 
       <div className="formation-grid">
         {/* Goalkeeper */}

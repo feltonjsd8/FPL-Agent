@@ -60,6 +60,22 @@ app.get('/api/entry/:id/picks/:event?', async (req, res) => {
   }
 });
 
+app.get('/api/entry/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`GET /api/entry/${id}`);
+  try {
+    const r = await fetch(`${FPL_BASE}/entry/${id}/`, { headers: DEFAULT_HEADERS });
+    if (!r.ok) {
+      const txt = await r.text();
+      return res.status(r.status).send(txt);
+    }
+    const data = await r.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Shared suggestion computation used by multiple endpoints
 async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, maxSingles = 8, maxPairs = 3) {
   // Build player map
