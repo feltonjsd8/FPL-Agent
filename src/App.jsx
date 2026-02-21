@@ -20,11 +20,9 @@ export default function App() {
     if (!entryId) return setError('Enter your entry ID (numeric)');
     try {
       const backend = getBackendUrl();
-      const currentEvent = event || localStorage.getItem('currentEvent') || '';
-      const [pickRes, entryRes, eventPicksRes] = await Promise.all([
+      const [pickRes, entryRes] = await Promise.all([
         fetch(`/api/entry/${entryId}/picks/${event || ''}`),
-        fetch(`${backend}/api/entry/${entryId}`),
-        fetch(`${backend}/api/entry/${entryId}/event/${currentEvent}/picks`)
+        fetch(`${backend}/api/entry/${entryId}`)
       ]);
 
       if (!pickRes.ok) {
@@ -36,22 +34,26 @@ export default function App() {
       const data = await pickRes.json();
 
       // Enrich picks data with points from event-specific picks endpoint
-      if (eventPicksRes.ok) {
+      const currentEvent = event || localStorage.getItem('currentEvent');
+      if (currentEvent) {
         try {
-          const eventPicks = await eventPicksRes.json();
-          // Event-specific picks should contain points for each player
-          if (eventPicks.picks) {
-            const pointsMap = {};
-            eventPicks.picks.forEach(p => {
-              pointsMap[p.element] = p.points;
-            });
-            // Merge points into picks
-            if (data.picks) {
-              data.picks.forEach(p => {
-                if (pointsMap[p.element] !== undefined) {
-                  p.points = pointsMap[p.element];
-                }
+          const eventPicksRes = await fetch(`${backend}/api/entry/${entryId}/event/${currentEvent}/picks`);
+          if (eventPicksRes.ok) {
+            const eventPicks = await eventPicksRes.json();
+            // Event-specific picks should contain points for each player
+            if (eventPicks.picks) {
+              const pointsMap = {};
+              eventPicks.picks.forEach(p => {
+                pointsMap[p.element] = p.points;
               });
+              // Merge points into picks
+              if (data.picks) {
+                data.picks.forEach(p => {
+                  if (pointsMap[p.element] !== undefined) {
+                    p.points = pointsMap[p.element];
+                  }
+                });
+              }
             }
           }
         } catch (e) {
