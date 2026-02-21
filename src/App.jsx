@@ -35,30 +35,25 @@ export default function App() {
 
       // Enrich picks data with points from event-specific picks endpoint
       const currentEvent = event || localStorage.getItem('currentEvent');
+      console.log('loadTeam: currentEvent =', currentEvent);
       if (currentEvent) {
         try {
           const eventPicksRes = await fetch(`${backend}/api/entry/${entryId}/event/${currentEvent}/picks`);
+          console.log('loadTeam: eventPicksRes.ok =', eventPicksRes.ok, 'status =', eventPicksRes.status);
           if (eventPicksRes.ok) {
             const eventPicks = await eventPicksRes.json();
-            // Event-specific picks should contain points for each player
-            if (eventPicks.picks) {
-              const pointsMap = {};
-              eventPicks.picks.forEach(p => {
-                pointsMap[p.element] = p.points;
-              });
-              // Merge points into picks
-              if (data.picks) {
-                data.picks.forEach(p => {
-                  if (pointsMap[p.element] !== undefined) {
-                    p.points = pointsMap[p.element];
-                  }
-                });
-              }
+            console.log('loadTeam: eventPicks =', eventPicks);
+            // Event-specific picks contain total points in entry_history, not individual player points
+            if (eventPicks.entry_history && eventPicks.entry_history.points !== undefined) {
+              console.log('loadTeam: Found total points:', eventPicks.entry_history.points);
+              // For now, just log that we got the data - individual player points not available in this endpoint
             }
           }
         } catch (e) {
-          // Ignore event picks fetch errors, continue without points
+          console.error('loadTeam: Error fetching event picks:', e);
         }
+      } else {
+        console.log('loadTeam: No currentEvent available, skipping event picks fetch');
       }
 
       setTeamData(data);
