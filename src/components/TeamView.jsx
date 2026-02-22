@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 const POS = { 1: 'GK', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 const positionClasses = { 1: 'gk', 2: 'def', 3: 'mid', 4: 'fwd' };
-const positionLabels = { 1: 'GOALKEEPERS', 2: 'DEFENDERS', 3: 'MIDFIELDERS', 4: 'FORWARDS' };
 
 export default function TeamView({ data, entryName = '', playerMap = {}, teamMap = {}, fixturesMap = {}, suggestionData = null }) {
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
@@ -184,7 +183,6 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
       <div className="formation-grid">
         {/* Goalkeeper */}
         <div className="formation-row goalkeeper-row">
-          <div className="position-label gk">{positionLabels[1]} ({(grouped[1] || []).length})</div>
           <div className="players-container">
             {(grouped[1] || []).map((p) => renderPlayerRow(p))}
           </div>
@@ -192,7 +190,6 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
 
         {/* Defenders */}
         <div className="formation-row defenders-row">
-          <div className="position-label def">{positionLabels[2]} ({(grouped[2] || []).length})</div>
           <div className="players-container">
             {(grouped[2] || []).map((p) => renderPlayerRow(p))}
           </div>
@@ -200,7 +197,6 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
 
         {/* Midfielders */}
         <div className="formation-row midfielders-row">
-          <div className="position-label mid">{positionLabels[3]} ({(grouped[3] || []).length})</div>
           <div className="players-container">
             {(grouped[3] || []).map((p) => renderPlayerRow(p))}
           </div>
@@ -208,7 +204,6 @@ export default function TeamView({ data, entryName = '', playerMap = {}, teamMap
 
         {/* Forwards */}
         <div className="formation-row forwards-row">
-          <div className="position-label fwd">{positionLabels[4]} ({(grouped[4] || []).length})</div>
           <div className="players-container">
             {(grouped[4] || []).map((p) => renderPlayerRow(p))}
           </div>
