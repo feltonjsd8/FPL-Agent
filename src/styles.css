@@ -558,3 +558,10 @@ header h1 { margin: 0 0 6px 0; color: var(--color-text-primary); }
   font-size: 0.75em;
   margin-left: 4px;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .position-label {
+    display: none;
+  }
+}
