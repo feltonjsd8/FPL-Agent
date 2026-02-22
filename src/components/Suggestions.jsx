@@ -125,7 +125,7 @@ export default function Suggestions({ data, playerMap = {}, teamMap = {}, fixtur
   return (
     <section className="suggestions">
       <h2>Suggestions</h2>
-      <div className="meta"><strong>Bank:</strong> {bank}m {isLoading ? <span className="loading">Loading…</span> : null}</div>
+      <div className="meta"><strong>Bank:</strong> {bank}m | <strong>Transfers Left:</strong> {data.free_transfers} {isLoading ? <span className="loading">Loading…</span> : null}</div>
 
       <div className="singles">
         <h3>Top Single Transfers</h3>

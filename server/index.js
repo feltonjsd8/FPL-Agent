@@ -189,9 +189,13 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
 
   // Attempt to get available bank (fallback to 0)
   let bank = 0;
+  let transfers_made = 0;
+  let free_transfers = 1; // Default to 1 free transfer
   try {
     bank = (entryInfo && (entryInfo.bank || (entryInfo.entry && entryInfo.entry.bank))) || 0;
-  } catch (e) { bank = 0; }
+    transfers_made = (entryInfo && (entryInfo.transfers_made || (entryInfo.entry && entryInfo.entry.transfers_made))) || 0;
+    free_transfers = (entryInfo && (entryInfo.free_transfers || (entryInfo.entry && entryInfo.entry.free_transfers))) || 1;
+  } catch (e) { bank = 0; transfers_made = 0; free_transfers = 1; }
 
   // Build per-position worst players
   const byPosition = {};
@@ -265,7 +269,7 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
 
   pairs.sort((a, b) => b.total_gain - a.total_gain);
 
-  return { bank, topSingles, pairs, topCandidates: scoredCandidates.slice(0, 20) };
+  return { bank, free_transfers, transfers_made, topSingles, pairs, topCandidates: scoredCandidates.slice(0, 20) };
 }
 
 
