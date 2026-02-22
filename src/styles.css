@@ -381,7 +381,18 @@ header h1 { margin: 0 0 6px 0; color: var(--color-text-primary); }
 .single .fixtures .fixture-badge { margin-top: 0 }
 
 /* Suggestions marker on team rows */
-.suggestion-marker { display:inline-block; margin-left:8px; color: var(--color-gain); font-weight:bold; font-size:1.1em }
+.suggestion-marker {
+  display: inline-block;
+  margin-left: 8px;
+  color: white;
+  background: var(--color-gain);
+  font-weight: bold;
+  font-size: 1.3em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  vertical-align: middle;
+  line-height: 1;
+}
 .team-row.has-suggestions { font-weight:500 }
 .team-row.selected { background-color:#f0f8ff; border-radius:4px; padding:6px }
 .team-row { transition: background-color 0.15s ease }
