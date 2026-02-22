@@ -187,22 +187,20 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
     return (info.form || 0) * 1.5 + projectedXGXA * 1.9 + fScore * 3.2;
   }
 
-  // Attempt to get available bank and free transfers from picks.entry_history
+  // Attempt to get available bank and transfers made from picks.entry_history
   let bank = 0;
-  let event_transfers = 0;
-  let free_transfers = 1; // Default to 1 free transfer per gameweek
+  let transfers_made = 0;
   try {
-    // First try picks.entry_history (current gameweek data)
+    // Extract from picks.entry_history (current gameweek data)
     if (picks && picks.entry_history) {
       bank = (picks.entry_history.bank || 0) / 10; // Convert from tenths to millions (1 = 0.1m)
-      event_transfers = picks.entry_history.event_transfers || 0;
-      free_transfers = Math.max(0, 1 - event_transfers); // 1 free transfer per week minus what's been used
+      transfers_made = picks.entry_history.event_transfers || 0; // Transfers already made this gameweek
     } else if (entryInfo && entryInfo.bank !== undefined) {
       // Fallback to entryInfo if available
       bank = (entryInfo.bank / 10) || 0;
-      free_transfers = (entryInfo.free_transfers) || 1;
+      transfers_made = (entryInfo.transfers_made) || 0;
     }
-  } catch (e) { bank = 0; event_transfers = 0; free_transfers = 1; }
+  } catch (e) { bank = 0; transfers_made = 0; }
 
   // Build per-position worst players
   const byPosition = {};
@@ -276,7 +274,7 @@ async function computeSuggestions(bootstrap, picks, fixtures, entryInfo = {}, ma
 
   pairs.sort((a, b) => b.total_gain - a.total_gain);
 
-  return { bank, free_transfers, transfers_made, topSingles, pairs, topCandidates: scoredCandidates.slice(0, 20) };
+  return { bank, transfers_made, topSingles, pairs, topCandidates: scoredCandidates.slice(0, 20) };
 }
 
 

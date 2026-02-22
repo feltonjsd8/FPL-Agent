@@ -107,7 +107,7 @@ function Pair({ p, playerMap = {}, teamMap = {}, fixturesMap = {} }) {
 }
 
 export default function Suggestions({ data, playerMap = {}, teamMap = {}, fixturesMap = {}, isLoading = false, teamData = null }) {
-  const { bank, topSingles = [], pairs = [], topCandidates = [] } = data || {};
+  const { bank, transfers_made = 0, topSingles = [], pairs = [], topCandidates = [] } = data || {};
   // Build a map of player ID -> gameweek points from team data
   const gwPointsMap = {};
   if (teamData && (teamData.picks || teamData.results)) {
@@ -125,7 +125,7 @@ export default function Suggestions({ data, playerMap = {}, teamMap = {}, fixtur
   return (
     <section className="suggestions">
       <h2>Suggestions</h2>
-      <div className="meta"><strong>Bank:</strong> {bank}m | <strong>Transfers Left:</strong> {data.free_transfers} {isLoading ? <span className="loading">Loading…</span> : null}</div>
+      <div className="meta"><strong>Bank:</strong> {bank}m | <strong>Made This Week:</strong> {transfers_made} {isLoading ? <span className="loading">Loading…</span> : null}</div>
 
       <div className="singles">
         <h3>Top Single Transfers</h3>
